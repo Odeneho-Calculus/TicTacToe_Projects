@@ -22,6 +22,7 @@ int mouse_x, mouse_y, Win_x, Win_y, object_select;
 int spin, spinboxes;// Use to spin X's and O's
 int player, computer, win, start_game;
 
+
 // row, column, diagonal information
 static int box[8][3] = {
     {0, 1, 2},
@@ -258,6 +259,23 @@ void Draw_X(int x, int y, int z, int a)
     glPopMatrix();
 }
 
+void showResultsBg() {
+    // Draw the background with transparency
+    glColor3f(0.0, 0.0, 1.0); // Set color with an alpha value for transparency
+    glBegin(GL_POLYGON);
+    glVertex2f(4.5f, 4.5f);    // topright
+    glVertex2f(-4.5f, 4.5f);   // topleft
+    glVertex2f(-4.5f, -4.5f);  // bottomleft
+    glVertex2f(4.5f, -4.5f);   // bottomright
+    glEnd();
+
+    // Disable blending after drawing
+    //glDisable(GL_BLEND);
+}
+
+
+
+
 // Draw our world
 void display(void)
 {
@@ -330,20 +348,36 @@ void display(void)
 
 
         if (win == 1){
-            glColor3f(0.0, 0.0, 1.0);
-            Sprint(-2, 8, "Congratulations! You Won");
-            PlaySound(TEXT("applause1.wav"),NULL,SND_SYNC);
+            glColor3f(1.0, 1.0, 1.0);
+            Sprint(-3, 3, "Congratulations! You Won");
+            Sprint(-2, 2, "That was awesome!!");
+            Sprint(-2, 1, "Restart - R");
+            Sprint(-2, 0, "Help - H");
+            Sprint(-2, -1, "Quit - Q");
+            showResultsBg();
+            PlaySound(TEXT("userWin1.wav"),NULL,SND_SYNC);
         }else if (win == -1){
-            glColor3f(1.0, 0.0, 0.0);
-            Sprint(-2, 8, "Computer Won");
-            PlaySound(TEXT("loss1.wav"),NULL,SND_SYNC);
+            glColor3f(1.0, 1.0, 1.0);
+            Sprint(-2, 3, "Computer Won");
+            Sprint(-2, 2, "Improve ur tactics!!");
+            Sprint(-2, 1, "Restart - R");
+            Sprint(-2, 0, "Help - H");
+            Sprint(-2, -1, "Quit - Q");
+            showResultsBg();
+            PlaySound(TEXT("compWin1.wav"),NULL,SND_SYNC);
         }else if (win == 2){
-            glColor3f(0.0, 1.0, 0.0);
-            Sprint(-1, 8, "Draw");
-            PlaySound(TEXT("draw1.wav"),NULL,SND_SYNC);
+            glColor3f(1.0, 1.0, 1.0);
+            Sprint(-1, 3, "Draw");
+            Sprint(-2, 2, "Quiet enough!!");
+            Sprint(-2, 1, "Restart - R");
+            Sprint(-2, 0, "Help - H");
+            Sprint(-2, -1, "Quit - Q");
+            showResultsBg();
+            PlaySound(TEXT("loss1.wav"),NULL,SND_SYNC);
         }
 
-                 // Setup view, and print view state on screen
+
+    // Setup view, and print view state on screen
     // for perspective view
     if (view_state == 1) {
       glColor3f(1.0, 0.0, 0.0);
@@ -356,7 +390,7 @@ void display(void)
     }
     // for ortho view
     else {
-      glColor3f(1.0, 0.0, 0.0);
+      glColor3f(0.0, 1.0, 0.0);
       Sprint(-8, 8, "Ortho View");
     }
         // Setup view, and print view state on screen
@@ -445,6 +479,23 @@ void keyboard(unsigned char key, int x, int y)
     case 'V':
       view_state = abs(view_state - 1);
       break;
+    case 'q':
+    case 'Q':
+        exit(0);
+        break;
+
+    case 'h':
+    case 'H':
+        abc = 3;
+        break;
+
+    case 'r':
+    case 'R':
+        start_game = 1;
+        init_game(); // Reset the game
+        break;
+
+
     case 27:
         exit(0); // exit program when [ESC] key presseed
         break;
@@ -555,6 +606,12 @@ int main(int argc, char **argv)
     glutKeyboardFunc(keyboard);
     //glutMouseFunc(mouse);
     glutTimerFunc(50, TimeEvent, 1);
+
+    // Enable blending for transparency
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glutMainLoop();
+
     return 0;
 }
